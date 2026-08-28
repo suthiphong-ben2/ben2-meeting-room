@@ -454,6 +454,7 @@ tailwind.config = {
       <p style="font-weight:600" id="printSchool">Benchamaracharungsarit 2 School</p>
       <p style="font-size:13px">วันที่พิมพ์: <span id="printDate"></span></p>
       <p style="font-size:13px" id="printRange"></p>
+      <p style="font-size:12px;color:#5B6B84" id="printDev"></p>
     </div>
 
     <div class="grid sm:grid-cols-3 gap-4 mb-5">
@@ -503,6 +504,13 @@ tailwind.config = {
 </section>
 
 </div>
+
+<footer class="no-print border-t border-line bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-slate2">
+    <span id="footSchool"></span>
+    <span>พัฒนาระบบโดย <span id="footDev" class="font-medium text-navy-700"></span></span>
+  </div>
+</footer>
 
 <!-- ══════════ Modal แก้ไขห้อง ══════════ -->
 <div class="modal" id="roomModal">
@@ -617,6 +625,7 @@ const POLL_SECONDS = 15;
 const LOGO_URL    = 'logo.png';
 const SCHOOL_NAME = 'โรงเรียนเบญจมราชรังสฤษฎิ์ ๒';
 const SCHOOL_EN   = 'Benchamaracharungsarit 2 School';
+const DEVELOPER   = 'ครูสุทธิพงษ์ สุขสร้อย';
 
 const STORE_KEY = 'bcr2_meeting_v2';
 const REMOTE = API_URL.trim().length > 0;
@@ -737,6 +746,9 @@ async function seedDefaults() {
 function applyBranding() {
   document.getElementById('brandSub').textContent = SCHOOL_EN;
   document.getElementById('printSchool').textContent = SCHOOL_NAME + ' · ' + SCHOOL_EN;
+  document.getElementById('footSchool').textContent = SCHOOL_NAME;
+  document.getElementById('footDev').textContent = DEVELOPER;
+  document.getElementById('printDev').textContent = 'พัฒนาระบบโดย ' + DEVELOPER;
   if (!LOGO_URL) return;
 
   const nav = document.getElementById('logoImg');

@@ -106,6 +106,17 @@ tailwind.config = {
   .eqbox:hover{border-color:#1B4FA0;background:#F7FAFE}
   .eqbox input{width:17px;height:17px;accent-color:#1B4FA0;cursor:pointer}
 
+  .avatar{border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 0 0 1px #DCE3ED;background:#E7EDF6;
+          display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;overflow:hidden}
+  .avatar-ph{color:#16375F;font-weight:600;font-family:'Bai Jamjuree',sans-serif}
+  .avatar-row{display:flex;align-items:center}
+  .avatar-row .avatar+.avatar{margin-left:-9px}
+  .rphoto{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#E7EDF6;display:block}
+  .rphoto-ph{display:flex;align-items:center;justify-content:center;color:#A6B3C7;border:1px dashed #CFD8E6}
+  .mgr-row{display:flex;align-items:center;gap:10px;border:1px solid #D5DDEA;border-radius:10px;padding:8px 10px;margin-bottom:8px;background:#fff}
+  .mgr-pick{cursor:pointer;position:relative;display:inline-flex}
+  .mgr-pick:hover .avatar{box-shadow:0 0 0 2px #1B4FA0}
+
   :focus-visible{outline:2px solid #1B4FA0;outline-offset:2px}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#C8D3E2;border-radius:99px;border:3px solid #F2F5FA}
@@ -262,7 +273,7 @@ tailwind.config = {
       <div class="flex gap-2"><span class="text-slate2 w-20 flex-shrink-0">ห้อง</span><span id="sumRoom" class="font-semibold font-display"></span></div>
       <div class="flex gap-2"><span class="text-slate2 w-20 flex-shrink-0">วันที่</span><span id="sumDate" class="font-medium"></span></div>
       <div class="flex gap-2"><span class="text-slate2 w-20 flex-shrink-0">เวลา</span><span id="sumTime" class="font-medium mono"></span></div>
-      <div class="flex gap-2"><span class="text-slate2 w-20 flex-shrink-0">ผู้ดูแล</span><span id="sumManagers" class="font-medium text-mint"></span></div>
+      <div class="flex gap-2 items-start"><span class="text-slate2 w-20 flex-shrink-0">ผู้ดูแล</span><span id="sumManagers" class="font-medium"></span></div>
     </div>
 
     <form id="formBooking" onsubmit="submitBooking(event)">
@@ -513,9 +524,24 @@ tailwind.config = {
           <div><label class="lbl" for="rmMic">ไมโครโฟนสูงสุด</label><input type="number" id="rmMic" min="0" value="0" class="inp mono"><p class="hint">ใส่ 0 หากห้องนี้ไม่มีไมค์</p></div>
         </div>
         <div class="mb-4">
-          <label class="lbl" for="rmManagers">ครูผู้ดูแลห้อง</label>
-          <textarea id="rmManagers" class="inp" placeholder="ครูอุดมรัตน์ เชิดไทย&#10;ครูเบญจมาศ เทียนทองดี"></textarea>
-          <p class="hint">พิมพ์ชื่อบรรทัดละ 1 คน เมื่อมีการเปลี่ยนตัวผู้ดูแลให้แก้ที่ช่องนี้</p>
+          <label class="lbl">รูปห้องประชุม</label>
+          <div class="flex items-start gap-3 flex-wrap">
+            <div style="width:180px">
+              <img id="rmPhotoPrev" class="rphoto hidden" alt="รูปห้อง">
+              <div id="rmPhotoEmpty" class="rphoto rphoto-ph"><svg class="icon" style="font-size:24px"><use href="#i-image"/></svg></div>
+            </div>
+            <div class="flex-1 min-w-[190px]">
+              <input type="file" id="rmPhotoFile" accept="image/*" class="inp text-sm" onchange="pickRoomPhoto(event)">
+              <button type="button" onclick="clearRoomPhoto()" class="btn btn-ghost btn-sm mt-2">ลบรูปนี้</button>
+              <p class="hint">แนะนำรูปแนวนอน อัตราส่วนประมาณ 16:9 ครูจะเห็นรูปนี้ตอนเลือกห้อง</p>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="lbl">ครูผู้ดูแลห้อง</label>
+          <div id="rmMgrList"></div>
+          <button type="button" onclick="addMgrRow()" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-plus"/></svg>เพิ่มครูผู้ดูแล</button>
+          <p class="hint">กดที่วงกลมด้านหน้าชื่อเพื่ออัปโหลดรูปครู เว้นว่างได้ ระบบจะแสดงเป็นอักษรย่อแทน</p>
         </div>
         <div class="mb-4">
           <label class="lbl" for="rmEquip">อุปกรณ์ประจำห้อง</label>
@@ -582,13 +608,13 @@ tailwind.config = {
    วาง URL ของ Google Apps Script Web App ที่ deploy แล้วในบรรทัดนี้
    ถ้าเว้นว่างไว้ ระบบจะเก็บข้อมูลในเครื่องนี้เครื่องเดียว
    ══════════════════════════════════════════════════════════ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbxr35hSCQp_XWMSdS3MOcLHLrKqx3_gWe2VWcRUEE3cjExByZYQmqOAlsfcH3DLxiI1/exec';
+const API_URL = '';
 const POLL_SECONDS = 15;
 
 /* ── โลโก้และชื่อโรงเรียน ──
    วางไฟล์โลโก้ไว้โฟลเดอร์เดียวกับไฟล์นี้ แล้วใส่ชื่อไฟล์ เช่น 'logo.png'
    หรือจะใส่เป็นลิงก์เต็ม https://... ก็ได้ ถ้าเว้นว่างจะใช้ตราสัญลักษณ์สำรองที่วาดไว้ในโค้ด */
-const LOGO_URL    = 'logo.png';
+const LOGO_URL    = '';
 const SCHOOL_NAME = 'โรงเรียนเบญจมราชรังสฤษฎิ์ 2';
 const SCHOOL_EN   = 'Benchamaracharungsarit 2 School';
 
@@ -598,19 +624,19 @@ const REMOTE = API_URL.trim().length > 0;
 const DAY_START = 7 * 60, DAY_END = 19 * 60;
 
 const DEFAULT_ROOMS = [
-  { name:'ห้องประชุมพิมพยะจันทร์', capacity:500,  location:'อาคาร 5 ชั้น 1', mic_max:6,
+  { name:'ห้องประชุมพิมพยะจันทร์', capacity:500,  location:'อาคารอำนวยการ', mic_max:6,
     managers:['ครูโชติวัตร ศิริโวหาร','ครูชนกันต์ แถบทอง','ครูสุขสนต์ กองศรี'],
     equipment:['จอ LED','เครื่องคอมพิวเตอร์','เครื่องเสียง','โพเดียม'] },
-  { name:'ห้องประชุมเกียรติยศ', capacity:40, location:'อาคาร 5 ชั้น 1', mic_max:4,
+  { name:'ห้องประชุมเกียรติยศ', capacity:40, location:'อาคารอำนวยการ ชั้น 2', mic_max:4,
     managers:['ครูอุดมรัตน์ เชิดไทย','ครูเบญจมาศ เทียนทองดี'],
     equipment:['จอ LED','เครื่องคอมพิวเตอร์'] },
-  { name:'ห้องประชุมดอนทอง', capacity:40, location:'อาคาร 2 ชั้น 1', mic_max:2,
+  { name:'ห้องประชุมดอนทอง', capacity:40, location:'อาคาร 3 ชั้น 1', mic_max:2,
     managers:['ครูพัฒนะ พิพัฒน์ศรี','ครูกานต์ วริทธิโสภากร'],
     equipment:['โปรเจกเตอร์','เครื่องคอมพิวเตอร์'] },
   { name:'ห้องประชุม 531', capacity:100, location:'อาคาร 5 ชั้น 3', mic_max:4,
     managers:['ครูพรทิพย์ ประทุมเทศ','ครูพัณนิดา เพียซ้าย'],
     equipment:['โปรเจกเตอร์','เครื่องคอมพิวเตอร์','เครื่องเสียง'] },
-  { name:'หอประชุมผู้ใหญ่ส่ง', capacity:1000, location:'อาคารผู้ใหญ่ส่ง แม่พยอมบำรุงวงษ์', mic_max:6,
+  { name:'หอประชุมผู้ใหญ่ส่ง', capacity:1000, location:'หอประชุมใหญ่', mic_max:6,
     managers:['ครูสิทธิโชค ไหมทอง','ครูภูเบศร สวัสดี'],
     equipment:['โปรเจกเตอร์','เครื่องเสียง','ไฟเวที','โพเดียม'] }
 ];
@@ -750,6 +776,35 @@ function thShort(s) { const [y,m,d] = s.split('-').map(Number);
 function roomByName(n) { return rooms.find(r => r.name === n) || null; }
 function activeRooms() { return rooms.filter(r => r.active !== false); }
 function lines(v) { return String(v || '').split('\n').map(s => s.trim()).filter(Boolean); }
+
+/* ── ครูผู้ดูแลและรูปภาพ ──
+   รองรับทั้งข้อมูลเก่าที่เก็บเป็นชื่ออย่างเดียว และข้อมูลใหม่ที่เก็บเป็น {name, photo} */
+function mgrList(r) {
+  return (r && r.managers || []).map(m => typeof m === 'string' ? { name:m, photo:'' } : { name:m.name || '', photo:m.photo || '' })
+                                .filter(m => m.name);
+}
+function mgrNames(r) { return mgrList(r).map(m => m.name).join(', ') || '-'; }
+
+function initials(name) {
+  const clean = String(name || '').replace(/^(ครู|อาจารย์|นาย|นาง|นางสาว|ผอ\.|รอง)\s*/, '').trim();
+  return clean ? clean.charAt(0) : '?';
+}
+function avatarHTML(m, px) {
+  const s = px || 34;
+  const t = 'title="' + esc(m.name) + '"';
+  if (m.photo) return `<img src="${esc(m.photo)}" alt="${esc(m.name)}" ${t} class="avatar" style="width:${s}px;height:${s}px">`;
+  return `<span class="avatar avatar-ph" ${t} style="width:${s}px;height:${s}px;font-size:${Math.round(s * .42)}px">${esc(initials(m.name))}</span>`;
+}
+function avatarRow(r, px) {
+  const list = mgrList(r);
+  if (!list.length) return '';
+  return `<span class="avatar-row">${list.map(m => avatarHTML(m, px)).join('')}</span>`;
+}
+function roomPhotoHTML(r, cls) {
+  return r.photo
+    ? `<img src="${esc(r.photo)}" alt="${esc(r.name)}" class="rphoto ${cls || ''}">`
+    : `<div class="rphoto rphoto-ph ${cls || ''}"><svg class="icon" style="font-size:22px"><use href="#i-door"/></svg></div>`;
+}
 
 const STATUS = {
   pending:  { text:'รอการอนุมัติ', cls:'bg-gold-soft text-gold-deep',  bar:'#D69B22' },
@@ -924,6 +979,7 @@ function renderRooms() {
     const eq = (r.equipment || []).slice(0, 4).map(e => `<span class="chip">${esc(e)}</span>`).join('');
     const more = (r.equipment || []).length > 4 ? `<span class="chip">+${r.equipment.length - 4}</span>` : '';
     return `<button type="button" class="room ${ok ? 'ok' : 'no'}" ${ok ? `onclick="pickRoom('${esc(r.room_id)}')"` : 'disabled'}>
+      <div class="mb-3">${roomPhotoHTML(r)}</div>
       <div class="flex items-start justify-between gap-2 mb-2">
         <h3 class="font-display font-semibold text-[17px] leading-snug">${esc(r.name)}</h3>
         <span class="pill ${ok ? 'bg-mint-soft text-mint' : 'bg-clay-soft text-clay'}">${ok ? 'ว่าง' : 'ไม่ว่าง'}</span>
@@ -931,7 +987,10 @@ function renderRooms() {
       <p class="text-[13px] text-slate2 mb-3">จุได้ ${r.capacity} คน${r.location ? ' · ' + esc(r.location) : ''}</p>
       ${timelineHTML(r.name)}
       <div class="flex flex-wrap gap-1.5 mt-3">${eq}${more}</div>
-      <p class="text-[12px] text-slate2 mt-3 pt-3 border-t border-line">ผู้ดูแล: ${esc((r.managers || []).join(', ') || '-')}</p>
+      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-line">
+        ${avatarRow(r, 28)}
+        <p class="text-[12px] text-slate2 leading-tight">${esc(mgrNames(r))}</p>
+      </div>
     </button>`;
   }).join('');
 
@@ -946,7 +1005,8 @@ function pickRoom(roomId) {
   document.getElementById('sumRoom').textContent = selectedRoom.name;
   document.getElementById('sumDate').textContent = thDate(selectedDate);
   document.getElementById('sumTime').textContent = st + ' – ' + en;
-  document.getElementById('sumManagers').textContent = (selectedRoom.managers || []).join(', ') || '-';
+  document.getElementById('sumManagers').innerHTML =
+    mgrList(selectedRoom).map(m => `<span class="inline-flex items-center gap-1.5 mr-3 mb-1">${avatarHTML(m, 26)}<span>${esc(m.name)}</span></span>`).join('') || '-';
 
   document.getElementById('eqList').innerHTML = (selectedRoom.equipment || []).length
     ? selectedRoom.equipment.map((e, i) => `<label class="eqbox"><input type="checkbox" value="${esc(e)}" id="eq${i}"><span>${esc(e)}</span></label>`).join('')
@@ -977,7 +1037,7 @@ function closeBookingForm() {
 }
 
 /* ══════════ รูปผังห้อง ══════════ */
-function compressImage(file, maxSide) {
+function compressImage(file, maxSide, quality) {
   return new Promise(resolve => {
     const fr = new FileReader();
     fr.onload = e => {
@@ -989,7 +1049,7 @@ function compressImage(file, maxSide) {
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
         c.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(c.toDataURL('image/jpeg', 0.8));
+        resolve(c.toDataURL('image/jpeg', quality || 0.8));
       };
       img.onerror = () => resolve(e.target.result);
       img.src = e.target.result;
@@ -998,21 +1058,23 @@ function compressImage(file, maxSide) {
   });
 }
 
-async function handleImageUpload(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { toast('ไฟล์ใหญ่เกิน 2MB', 'error'); ev.target.value = ''; return; }
-  if (!file.type.startsWith('image/')) { toast('เลือกได้เฉพาะไฟล์รูปภาพ', 'error'); ev.target.value = ''; return; }
+// ย่อรูปแล้วอัปโหลด คืนค่าเป็นลิงก์ (โหมดฐานข้อมูลกลาง) หรือ data URL (โหมดเครื่องเดียว)
+async function uploadImage(file, maxSide, quality) {
+  if (!file) return null;
+  if (file.size > 2 * 1024 * 1024) { toast('ไฟล์ใหญ่เกิน 2MB', 'error'); return null; }
+  if (!file.type.startsWith('image/')) { toast('เลือกได้เฉพาะไฟล์รูปภาพ', 'error'); return null; }
+  const dataUrl = await compressImage(file, maxSide, quality);
+  if (!REMOTE) return dataUrl;
+  toast('กำลังอัปโหลดรูป...');
+  try { return await apiCall('upload', { name:file.name, dataUrl }); }
+  catch (e) { toast('อัปโหลดรูปไม่สำเร็จ: ' + e.message, 'error'); return null; }
+}
 
-  const dataUrl = await compressImage(file, 900);
-  if (REMOTE) {
-    toast('กำลังอัปโหลดรูป...');
-    try { layoutImageData = await apiCall('upload', { name:file.name, dataUrl }); }
-    catch (e) { toast('อัปโหลดรูปไม่สำเร็จ: ' + e.message, 'error'); return; }
-  } else {
-    layoutImageData = dataUrl;
-  }
-  document.getElementById('layoutPreviewImg').src = layoutImageData;
+async function handleImageUpload(ev) {
+  const url = await uploadImage(ev.target.files[0], 900, 0.8);
+  if (!url) { ev.target.value = ''; return; }
+  layoutImageData = url;
+  document.getElementById('layoutPreviewImg').src = url;
   document.getElementById('layoutPreview').classList.remove('hidden');
 }
 
@@ -1271,11 +1333,11 @@ function renderApprovals() {
 
   box.innerHTML = list.map(b => {
     const room = roomByName(b.room_name);
-    const mg = room ? (room.managers || []).join(', ') : '';
+    const mg = room ? mgrNames(room) : '';
     return bookingCard(b,
       `<button onclick="approve('${b.booking_id}')" class="btn btn-mint btn-sm"><svg class="icon"><use href="#i-check"/></svg>อนุมัติ</button>
        <button onclick="reject('${b.booking_id}')" class="btn btn-danger btn-sm"><svg class="icon"><use href="#i-x"/></svg>ปฏิเสธ</button>
-       ${mg ? `<span class="text-xs text-slate2 self-center ml-1">ผู้ดูแลห้อง: ${esc(mg)}</span>` : ''}`);
+       ${room ? `<span class="flex items-center gap-2 ml-1 text-xs text-slate2">${avatarRow(room, 24)}<span>ผู้ดูแลห้อง: ${esc(mg)}</span></span>` : ''}`);
   }).join('');
 }
 
@@ -1346,15 +1408,18 @@ function renderRoomAdmin() {
   box.innerHTML = rooms.map(r => {
     const used = allBookings.filter(b => b.room_name === r.name && isLive(b)).length;
     return `<div class="card p-5">
-      <div class="flex items-start justify-between gap-3 mb-2">
-        <div>
-          <h3 class="font-display font-semibold text-[17px]">${esc(r.name)}</h3>
-          <p class="text-[13px] text-slate2">จุได้ ${r.capacity} คน${r.location ? ' · ' + esc(r.location) : ''}</p>
+      <div class="flex items-start gap-4 mb-3">
+        <div style="width:110px;flex:0 0 auto">${roomPhotoHTML(r)}</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <h3 class="font-display font-semibold text-[17px] leading-snug">${esc(r.name)}</h3>
+            <span class="pill ${r.active === false ? 'bg-paper text-slate2' : 'bg-mint-soft text-mint'}">${r.active === false ? 'ปิดการจอง' : 'เปิดให้จอง'}</span>
+          </div>
+          <p class="text-[13px] text-slate2 mt-0.5">จุได้ ${r.capacity} คน${r.location ? ' · ' + esc(r.location) : ''}</p>
+          <div class="flex items-center gap-2 mt-2">${avatarRow(r, 26)}<span class="text-[12px] text-slate2 leading-tight">${esc(mgrNames(r))}</span></div>
         </div>
-        <span class="pill ${r.active === false ? 'bg-paper text-slate2' : 'bg-mint-soft text-mint'}">${r.active === false ? 'ปิดการจอง' : 'เปิดให้จอง'}</span>
       </div>
-      <p class="text-[13px] text-slate2 mb-1"><b class="text-navy-700 font-semibold">ผู้ดูแล</b> ${esc((r.managers || []).join(', ') || '-')}</p>
-      <div class="flex flex-wrap gap-1.5 my-3">
+      <div class="flex flex-wrap gap-1.5 mb-3">
         ${(r.equipment || []).map(e => `<span class="chip">${esc(e)}</span>`).join('') || '<span class="text-[13px] text-slate2">ยังไม่ได้ระบุอุปกรณ์</span>'}
         ${Number(r.mic_max) > 0 ? `<span class="chip">ไมค์ ${r.mic_max} ตัว</span>` : ''}
       </div>
@@ -1366,6 +1431,46 @@ function renderRoomAdmin() {
   }).join('');
 }
 
+let rmPhoto = '', rmManagers = [];
+
+function renderRoomPhoto() {
+  const img = document.getElementById('rmPhotoPrev');
+  const ph  = document.getElementById('rmPhotoEmpty');
+  if (rmPhoto) { img.src = rmPhoto; img.classList.remove('hidden'); ph.classList.add('hidden'); }
+  else { img.classList.add('hidden'); ph.classList.remove('hidden'); }
+}
+async function pickRoomPhoto(ev) {
+  const url = await uploadImage(ev.target.files[0], 1000, 0.75);
+  ev.target.value = '';
+  if (!url) return;
+  rmPhoto = url; renderRoomPhoto();
+}
+function clearRoomPhoto() { rmPhoto = ''; renderRoomPhoto(); }
+
+function renderMgrRows() {
+  const box = document.getElementById('rmMgrList');
+  box.innerHTML = rmManagers.map((m, i) => `
+    <div class="mgr-row">
+      <label class="mgr-pick" title="อัปโหลดรูปครู">
+        ${avatarHTML(m, 40)}
+        <input type="file" accept="image/*" style="display:none" onchange="pickMgrPhoto(event,${i})">
+      </label>
+      <input type="text" class="inp" style="flex:1;min-width:0" placeholder="ชื่อครูผู้ดูแล เช่น ครูอุดมรัตน์ เชิดไทย"
+             value="${esc(m.name)}" oninput="rmManagers[${i}].name = this.value">
+      ${m.photo ? `<button type="button" class="btn btn-ghost btn-sm" onclick="clearMgrPhoto(${i})">ลบรูป</button>` : ''}
+      <button type="button" class="btn btn-danger btn-sm" onclick="removeMgr(${i})" title="ลบรายชื่อนี้"><svg class="icon"><use href="#i-trash"/></svg></button>
+    </div>`).join('') || '<p class="text-sm text-slate2 mb-2">ยังไม่มีรายชื่อครูผู้ดูแล</p>';
+}
+function addMgrRow() { rmManagers.push({ name:'', photo:'' }); renderMgrRows(); }
+function removeMgr(i) { rmManagers.splice(i, 1); renderMgrRows(); }
+function clearMgrPhoto(i) { rmManagers[i].photo = ''; renderMgrRows(); }
+async function pickMgrPhoto(ev, i) {
+  const url = await uploadImage(ev.target.files[0], 320, 0.8);
+  ev.target.value = '';
+  if (!url) return;
+  rmManagers[i].photo = url; renderMgrRows();
+}
+
 function openRoomModal(roomId) {
   const r = roomId ? rooms.find(x => x.room_id === roomId) : null;
   document.getElementById('roomModalTitle').textContent = r ? 'แก้ไขข้อมูลห้อง' : 'เพิ่มห้องประชุม';
@@ -1374,10 +1479,16 @@ function openRoomModal(roomId) {
   document.getElementById('rmCap').value = r ? r.capacity : '';
   document.getElementById('rmLoc').value = r ? (r.location || '') : '';
   document.getElementById('rmMic').value = r ? (r.mic_max || 0) : 0;
-  document.getElementById('rmManagers').value = r ? (r.managers || []).join('\n') : '';
   document.getElementById('rmEquip').value = r ? (r.equipment || []).join('\n') : '';
   document.getElementById('rmActive').checked = r ? r.active !== false : true;
   document.getElementById('rmDelete').style.display = r ? '' : 'none';
+
+  rmPhoto = r ? (r.photo || '') : '';
+  rmManagers = r ? mgrList(r) : [];
+  if (!rmManagers.length) rmManagers.push({ name:'', photo:'' });
+  renderRoomPhoto();
+  renderMgrRows();
+
   document.getElementById('roomModal').classList.add('open');
 }
 function closeRoomModal() { document.getElementById('roomModal').classList.remove('open'); }
@@ -1396,7 +1507,8 @@ async function saveRoom(ev) {
     capacity: Number(document.getElementById('rmCap').value) || 0,
     location: document.getElementById('rmLoc').value.trim(),
     mic_max: Number(document.getElementById('rmMic').value) || 0,
-    managers: lines(document.getElementById('rmManagers').value),
+    photo: rmPhoto,
+    managers: rmManagers.map(m => ({ name:m.name.trim(), photo:m.photo || '' })).filter(m => m.name),
     equipment: lines(document.getElementById('rmEquip').value),
     active: document.getElementById('rmActive').checked,
     sort_order: old ? (old.sort_order || 0) : rooms.length

@@ -375,7 +375,7 @@ tailwind.config = {
         <button type="submit" id="btnLogin" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
       </form>
       <div id="loginError" class="hidden mt-3 rounded-lg bg-clay-soft border border-clay/25 text-clay text-sm px-3 py-2 text-center">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
-      <p class="text-[11px] text-slate2/70 mt-4 text-center"></p>
+      <p class="text-[11px] text-slate2/70 mt-4 text-center"></p> /*ค่าเริ่มต้น admin / benchama2 — เปลี่ยนได้ที่แท็บผู้ใช้งาน*/
     </div>
   </div>
 </section>
@@ -634,7 +634,7 @@ const DAY_START = 7 * 60, DAY_END = 19 * 60;
 
 const DEFAULT_ROOMS = [
   { name:'ห้องประชุมพิมพยะจันทร์', capacity:500,  location:'อาคารอำนวยการ', mic_max:6,
-    managers:['ครูโชติวัตร ศิริโวหาร','ครูชนกันต์ แถบทอง','ครูสุขสนต์ กองศรี'],
+    managers:['ครูโชติวัตร ศิริโวหาร','ครูชนกันต์ แถบทอง'],
     equipment:['จอ LED','เครื่องคอมพิวเตอร์','เครื่องเสียง','โพเดียม'] },
   { name:'ห้องประชุมเกียรติยศ', capacity:40, location:'อาคารอำนวยการ ชั้น 2', mic_max:4,
     managers:['ครูอุดมรัตน์ เชิดไทย','ครูเบญจมาศ เทียนทองดี'],

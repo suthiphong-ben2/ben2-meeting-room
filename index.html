@@ -733,7 +733,9 @@ function setConn(ok, msg) {
 function refresh() {
   allBookings = records.filter(x => x.booking_id);
   allUsers    = records.filter(x => x.user_id);
-  rooms       = records.filter(x => x.room_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  // รายการจองก็มี room_id ติดไปด้วย จึงต้องคัดออก ไม่งั้นจะถูกนับเป็นห้อง
+  rooms       = records.filter(x => x.room_id && !x.booking_id && !x.user_id)
+                       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   renderAll();
 }
 

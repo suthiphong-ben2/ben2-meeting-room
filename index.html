@@ -586,6 +586,10 @@ tailwind.config = {
           <div><label class="lbl" for="edPurpose">วัตถุประสงค์</label><input type="text" id="edPurpose" required class="inp"></div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4 mb-4">
+          <div><label class="lbl" for="edRoom">ห้องประชุม <span class="text-clay">*</span></label>
+            <select id="edRoom" class="inp" onchange="renderEditEquip()"></select></div>
+          <div><label class="lbl" for="edDate">วันที่ <span class="text-clay">*</span></label>
+            <input type="date" id="edDate" required class="inp"></div>
           <div><label class="lbl" for="edStart">เวลาเริ่ม</label><input type="time" id="edStart" required class="inp mono"></div>
           <div><label class="lbl" for="edEnd">เวลาสิ้นสุด</label><input type="time" id="edEnd" required class="inp mono"></div>
         </div>
@@ -1169,6 +1173,11 @@ function arrangeText(s) {
   return ({theater:'โรงละคร',classroom:'ห้องเรียน','u-shape':'ตัวยู',banquet:'จัดเลี้ยง',hollow:'สี่เหลี่ยมกลวง',boardroom:'ห้องประชุม',other:'อื่นๆ'})[s] || s;
 }
 
+// รายการที่จองผ่านการ์ดห้องผีช่วงระบบบั๊ก จะไม่มีชื่อห้อง ต้องเตือนให้เห็นชัด
+function roomLabel(b) {
+  return b.room_name ? esc(b.room_name) : '<span class="text-clay">⚠ ยังไม่ได้ระบุห้อง</span>';
+}
+
 function bookingCard(b, actions) {
   const s = stat(b.status);
   const eq = equipmentText(b);
@@ -1176,7 +1185,7 @@ function bookingCard(b, actions) {
     <div class="flex flex-wrap items-start gap-3 mb-3">
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <h3 class="font-display font-semibold text-[17px]">${esc(b.room_name)}</h3>
+          <h3 class="font-display font-semibold text-[17px]">${roomLabel(b)}</h3>
           <span class="pill ${s.cls}">${s.text}</span>
         </div>
         <p class="text-sm text-slate2 mt-0.5">${esc(b.purpose)}</p>
@@ -1230,7 +1239,14 @@ function cancelBooking(id) {
 function openEdit(id) {
   const b = allBookings.find(x => x.booking_id === id);
   if (!b) return;
-  const room = roomByName(b.room_name);
+
+  // เติมรายชื่อห้องให้เลือก ถ้ารายการนี้ไม่มีห้อง จะบังคับให้เลือกก่อนบันทึก
+  const cur = rooms.find(r => r.room_id === b.room_id) || roomByName(b.room_name);
+  document.getElementById('edRoom').innerHTML =
+    (cur ? '' : '<option value="">— ยังไม่ได้ระบุห้อง เลือกห้องก่อนบันทึก —</option>') +
+    rooms.map(r => `<option value="${esc(r.room_id)}">${esc(r.name)}</option>`).join('');
+  document.getElementById('edRoom').value = cur ? cur.room_id : '';
+  document.getElementById('edDate').value = b.date || '';
 
   document.getElementById('edId').value = b.booking_id;
   document.getElementById('edName').value = b.booker_name;
@@ -1244,12 +1260,18 @@ function openEdit(id) {
   document.getElementById('edChair').value = b.chair_count || 0;
   document.getElementById('edOther').value = b.other_equipment || '';
 
-  const sel = b.equipment_selected || [];
-  document.getElementById('edEqList').innerHTML = (room && room.equipment || []).map((e, i) =>
-    `<label class="eqbox"><input type="checkbox" value="${esc(e)}" ${sel.includes(e) ? 'checked' : ''}><span>${esc(e)}</span></label>`
-  ).join('') || '<p class="text-sm text-slate2">ห้องนี้ไม่มีรายการอุปกรณ์</p>';
-
+  renderEditEquip(b.equipment_selected || []);
   document.getElementById('editModal').classList.add('open');
+}
+
+// วาดช่องติ๊กอุปกรณ์ตามห้องที่เลือกอยู่ คงค่าที่ติ๊กไว้เดิมเท่าที่ห้องใหม่มี
+function renderEditEquip(preset) {
+  const box = document.getElementById('edEqList');
+  const keep = preset || Array.from(box.querySelectorAll('input:checked')).map(i => i.value);
+  const room = rooms.find(r => r.room_id === document.getElementById('edRoom').value);
+  box.innerHTML = (room && room.equipment || []).map(e =>
+    `<label class="eqbox"><input type="checkbox" value="${esc(e)}" ${keep.includes(e) ? 'checked' : ''}><span>${esc(e)}</span></label>`
+  ).join('') || '<p class="text-sm text-slate2">ห้องนี้ยังไม่ได้ระบุรายการอุปกรณ์</p>';
 }
 function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
 
@@ -1258,14 +1280,25 @@ async function saveEdit(ev) {
   const b = allBookings.find(x => x.booking_id === document.getElementById('edId').value);
   if (!b) return;
   const st = document.getElementById('edStart').value, en = document.getElementById('edEnd').value;
+  const roomId = document.getElementById('edRoom').value;
+  const date = document.getElementById('edDate').value;
+
+  if (!roomId) { toast('เลือกห้องประชุมก่อน', 'error'); return; }
+  if (!date) { toast('ระบุวันที่ก่อน', 'error'); return; }
   if (st >= en) { toast('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น', 'error'); return; }
-  if (!isFree(b.room_name, b.date, st, en, b.booking_id)) { toast('ช่วงเวลาใหม่ชนกับการจองอื่น', 'error'); return; }
+
+  const room = rooms.find(r => r.room_id === roomId);
+  if (!room) { toast('ไม่พบห้องที่เลือก', 'error'); return; }
+  if (!isFree(room.name, date, st, en, b.booking_id)) { toast('ช่วงเวลานี้ชนกับการจองอื่นในห้อง ' + room.name, 'error'); return; }
 
   const eqSel = Array.from(document.querySelectorAll('#edEqList input:checked')).map(i => i.value);
   const tc = Number(document.getElementById('edTable').value) || 0;
   const cc = Number(document.getElementById('edChair').value) || 0;
 
   const r = await db.save(Object.assign({}, b, {
+    room_id: room.room_id,
+    room_name: room.name,
+    date: date,
     booker_name: document.getElementById('edName').value.trim(),
     department: document.getElementById('edDept').value.trim(),
     phone: document.getElementById('edPhone').value.trim(),
@@ -1357,6 +1390,7 @@ function renderApprovals() {
     return bookingCard(b,
       `<button onclick="approve('${b.booking_id}')" class="btn btn-mint btn-sm"><svg class="icon"><use href="#i-check"/></svg>อนุมัติ</button>
        <button onclick="reject('${b.booking_id}')" class="btn btn-danger btn-sm"><svg class="icon"><use href="#i-x"/></svg>ปฏิเสธ</button>
+       <button onclick="openEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>
        ${room ? `<span class="flex items-center gap-2 ml-1 text-xs text-slate2">${avatarRow(room, 24)}<span>ผู้ดูแลห้อง: ${esc(mg)}</span></span>` : ''}`);
   }).join('');
 }
@@ -1406,6 +1440,7 @@ function renderAdminBookings() {
 
   box.innerHTML = list.map(b => bookingCard(b,
     (b.status === 'pending' ? `<button onclick="approve('${b.booking_id}')" class="btn btn-mint btn-sm">อนุมัติ</button>` : '') +
+    `<button onclick="openEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>` +
     (isLive(b) ? `<button onclick="cancelBooking('${b.booking_id}')" class="btn btn-ghost btn-sm">ยกเลิก</button>` : '') +
     `<button onclick="deleteBooking('${b.booking_id}')" class="btn btn-danger btn-sm"><svg class="icon"><use href="#i-trash"/></svg>ลบถาวร</button>`
   )).join('');

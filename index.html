@@ -375,7 +375,7 @@ tailwind.config = {
         <button type="submit" id="btnLogin" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
       </form>
       <div id="loginError" class="hidden mt-3 rounded-lg bg-clay-soft border border-clay/25 text-clay text-sm px-3 py-2 text-center">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
-      <p class="text-[11px] text-slate2/70 mt-4 text-center"></p>
+      <p class="text-[11px] text-slate2/70 mt-4 text-center">ค่าเริ่มต้น admin / benchama2 — เปลี่ยนได้ที่แท็บผู้ใช้งาน</p>
     </div>
   </div>
 </section>
@@ -619,6 +619,12 @@ tailwind.config = {
 const API_URL = 'https://script.google.com/macros/s/AKfycbxr35hSCQp_XWMSdS3MOcLHLrKqx3_gWe2VWcRUEE3cjExByZYQmqOAlsfcH3DLxiI1/exec';
 const POLL_SECONDS = 15;
 
+/* รหัสลับ ต้องตรงกับ SHARED_SECRET ฝั่งเซิร์ฟเวอร์เป๊ะๆ
+   สร้างรหัสได้จากฟังก์ชัน makeSecret ใน Apps Script
+   หมายเหตุ ไฟล์นี้เปิดดูซอร์สได้ รหัสนี้จึงกันบอทและคนที่บังเอิญเจอ URL
+   แต่กันคนที่ตั้งใจเจาะไม่ได้ */
+const API_SECRET = 'hW83H5KENnDCaai6JfgmU7Fn8wLwR3KS';
+
 /* ── โลโก้และชื่อโรงเรียน ──
    วางไฟล์โลโก้ไว้โฟลเดอร์เดียวกับไฟล์นี้ แล้วใส่ชื่อไฟล์ เช่น 'logo.png'
    หรือจะใส่เป็นลิงก์เต็ม https://... ก็ได้ ถ้าเว้นว่างจะใช้ตราสัญลักษณ์สำรองที่วาดไว้ในโค้ด */
@@ -663,7 +669,7 @@ async function apiCall(action, payload) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // เลี่ยง preflight ที่ Apps Script ไม่รองรับ
-    body: JSON.stringify({ action, payload })
+    body: JSON.stringify({ action, payload, secret: API_SECRET })
   });
   if (!res.ok) throw new Error('เซิร์ฟเวอร์ตอบกลับ ' + res.status);
   const data = await res.json();

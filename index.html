@@ -620,14 +620,14 @@ tailwind.config = {
    วาง URL ของ Google Apps Script Web App ที่ deploy แล้วในบรรทัดนี้
    ถ้าเว้นว่างไว้ ระบบจะเก็บข้อมูลในเครื่องนี้เครื่องเดียว
    ══════════════════════════════════════════════════════════ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbynh17DpY29HRz-W6pS4EnV6XL_vv3kLisIAyJHUIitKQNPqA8r3yBDwH1PMKjLx2xc/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxr35hSCQp_XWMSdS3MOcLHLrKqx3_gWe2VWcRUEE3cjExByZYQmqOAlsfcH3DLxiI1/exec';
 const POLL_SECONDS = 15;
 
 /* รหัสลับ ต้องตรงกับ SHARED_SECRET ฝั่งเซิร์ฟเวอร์เป๊ะๆ
    สร้างรหัสได้จากฟังก์ชัน makeSecret ใน Apps Script
    หมายเหตุ ไฟล์นี้เปิดดูซอร์สได้ รหัสนี้จึงกันบอทและคนที่บังเอิญเจอ URL
    แต่กันคนที่ตั้งใจเจาะไม่ได้ */
-const API_SECRET = 'hW83H5KENnDCaai6JfgmU7Fn8wLwR3KS';
+const API_SECRET = '';
 
 /* ── โลโก้และชื่อโรงเรียน ──
    วางไฟล์โลโก้ไว้โฟลเดอร์เดียวกับไฟล์นี้ แล้วใส่ชื่อไฟล์ เช่น 'logo.png'
@@ -848,6 +848,65 @@ function toast(msg, type) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
+
+function digitsOnly(s) { return String(s == null ? '' : s).replace(/\D/g, ''); }
+
+/**
+ * ยืนยันว่าเป็นเจ้าของรายการจริง ก่อนให้แก้ไขหรือยกเลิก
+ * แอดมินที่ล็อกอินแล้วผ่านได้เลย
+ */
+function requireOwner(id, cb) {
+  if (currentUser) { cb(); return; }
+
+  const b = allBookings.find(x => x.booking_id === id);
+  if (!b) return;
+
+  const need = digitsOnly(b.phone);
+  if (!need) {
+    confirmBox('แก้ไขรายการนี้ไม่ได้', 'รายการนี้ไม่มีเบอร์โทรบันทึกไว้ จึงยืนยันตัวตนไม่ได้ กรุณาแจ้งผู้ดูแลระบบให้ช่วยแก้ให้', 'เข้าใจแล้ว', function () {});
+    return;
+  }
+
+  let tries = 0;
+  const d = document.createElement('div');
+  d.className = 'modal open';
+  d.innerHTML = `<div class="modal-box max-w-sm p-6">
+    <h3 class="font-display font-bold text-lg mb-1">ยืนยันตัวตน</h3>
+    <p class="text-sm text-slate2 mb-4">ใส่เบอร์โทรที่ใช้ตอนจอง เพื่อยืนยันว่าเป็นรายการของคุณ</p>
+    <input type="tel" inputmode="numeric" class="inp mono" data-phone placeholder="08XXXXXXXX" autocomplete="off">
+    <p class="text-sm text-clay mt-2 hidden" data-err>เบอร์โทรไม่ตรงกับที่บันทึกไว้</p>
+    <div class="flex gap-2 justify-end mt-5">
+      <button data-no class="btn btn-ghost btn-sm">ยกเลิก</button>
+      <button data-yes class="btn btn-primary btn-sm">ยืนยัน</button>
+    </div>
+  </div>`;
+
+  const input = d.querySelector('[data-phone]');
+  const err = d.querySelector('[data-err]');
+
+  function check() {
+    if (digitsOnly(input.value) === need) { d.remove(); cb(); return; }
+    tries++;
+    if (tries >= 3) {
+      d.remove();
+      toast('ยืนยันตัวตนไม่สำเร็จ กรุณาแจ้งผู้ดูแลระบบ', 'error');
+      return;
+    }
+    err.textContent = 'เบอร์โทรไม่ตรงกับที่บันทึกไว้ (เหลืออีก ' + (3 - tries) + ' ครั้ง)';
+    err.classList.remove('hidden');
+    input.select();
+  }
+
+  d.querySelector('[data-no]').onclick = () => d.remove();
+  d.querySelector('[data-yes]').onclick = check;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  document.body.appendChild(d);
+  setTimeout(() => input.focus(), 50);
+}
+
+// ใช้ในหน้ารายการจองของครู ต้องยืนยันเบอร์ก่อน
+function ownerEdit(id)   { requireOwner(id, () => openEdit(id)); }
+function ownerCancel(id) { requireOwner(id, () => cancelBooking(id)); }
 
 function confirmBox(title, msg, label, cb) {
   const d = document.createElement('div');
@@ -1197,7 +1256,7 @@ function bookingCard(b, actions) {
     </div>
     <div class="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[13px] text-slate2 mb-3">
       <div class="flex gap-2"><svg class="icon mt-0.5"><use href="#i-user"/></svg><span>${esc(b.booker_name)} · ${esc(b.department)}</span></div>
-      <div class="flex gap-2"><span class="mono">${esc(b.phone)}</span></div>
+      ${currentUser ? `<div class="flex gap-2"><span class="mono">${esc(b.phone)}</span></div>` : ''}
     </div>
     ${eq.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${eq.map(e => `<span class="chip">${esc(e)}</span>`).join('')}</div>` : ''}
     ${b.layout_image ? `<button onclick="viewImage('${esc(b.layout_image)}')" class="btn btn-ghost btn-sm mb-3"><svg class="icon"><use href="#i-image"/></svg>ดูผังการจัดห้อง</button>` : ''}
@@ -1221,8 +1280,8 @@ function renderMyBookings() {
   if (!list.length) { box.innerHTML = `<div class="card p-10 text-center text-slate2">ไม่พบรายการจองตามเงื่อนไขที่เลือก</div>`; return; }
 
   box.innerHTML = list.map(b => bookingCard(b,
-    (b.status === 'pending' ? `<button onclick="openEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>` : '') +
-    (isLive(b) ? `<button onclick="cancelBooking('${b.booking_id}')" class="btn btn-danger btn-sm">ยกเลิกการจอง</button>` : '')
+    (b.status === 'pending' ? `<button onclick="ownerEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>` : '') +
+    (isLive(b) ? `<button onclick="ownerCancel('${b.booking_id}')" class="btn btn-danger btn-sm">ยกเลิกการจอง</button>` : '')
   )).join('');
 }
 

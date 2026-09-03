@@ -117,6 +117,33 @@ tailwind.config = {
   .mgr-pick{cursor:pointer;position:relative;display:inline-flex}
   .mgr-pick:hover .avatar{box-shadow:0 0 0 2px #1B4FA0}
 
+  /* แถบแบ่งหน้า */
+  .pager{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+         background:#fff;border:1px solid #DCE3ED;border-radius:12px;padding:10px 14px}
+  .pager__info{font-size:12.5px;color:#5B6B84;margin-right:auto;font-family:'IBM Plex Mono',monospace}
+  .pager__btn{width:34px;height:34px;border:1px solid #D5DDEA;background:#fff;border-radius:9px;
+              color:#16375F;display:grid;place-items:center;cursor:pointer;transition:.15s}
+  .pager__btn:hover:not(:disabled){background:#EDF1F7;border-color:#1B4FA0}
+  .pager__btn:disabled{opacity:.35;cursor:default}
+  .pager select{border:1px solid #D5DDEA;border-radius:9px;padding:7px 10px;font-family:inherit;font-size:13px;background:#fff;cursor:pointer}
+
+  /* ชิปกรองสถานะ */
+  .fchip{border:1px solid #D5DDEA;background:#fff;border-radius:999px;padding:6px 14px;
+         font-size:13px;font-weight:500;color:#5B6B84;cursor:pointer;transition:.15s;font-family:inherit;
+         display:inline-flex;align-items:center;gap:7px}
+  .fchip:hover{border-color:#1B4FA0;color:#16375F}
+  .fchip.on{background:#0E2748;border-color:#0E2748;color:#fff}
+  .fchip__n{font-family:'IBM Plex Mono',monospace;font-size:11.5px;opacity:.75}
+
+  /* การ์ดรายการจอง */
+  .card--hover{transition:box-shadow .18s ease, transform .18s ease}
+  .card--hover:hover{box-shadow:0 8px 24px rgba(14,39,72,.10);transform:translateY(-1px)}
+  .today-pill{background:#FBF1DC;color:#9A6C0B;font-size:10.5px;font-weight:600;
+              border-radius:99px;padding:2px 8px;white-space:nowrap}
+
+  .list-in{animation:fadein .22s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
   :focus-visible{outline:2px solid #1B4FA0;outline-offset:2px}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#C8D3E2;border-radius:99px;border:3px solid #F2F5FA}
@@ -158,7 +185,7 @@ tailwind.config = {
 </defs></svg>
 
 <!-- ══════════ แถบบน ══════════ -->
-<header class="bg-navy sticky top-0 z-50 no-print" style="border-bottom:3px solid #D69B22">
+<header class="sticky top-0 z-50 no-print" style="background:linear-gradient(180deg,#0E2748,#14345F);border-bottom:3px solid #D69B22">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="flex items-center justify-between h-16 gap-3">
       <div class="flex items-center gap-3 min-w-0">
@@ -340,10 +367,11 @@ tailwind.config = {
   <p class="eyebrow mb-1">ติดตามสถานะ</p>
   <h1 class="font-display font-bold text-2xl sm:text-3xl mb-5">รายการจองทั้งหมด</h1>
   <div class="card p-4 mb-5 grid sm:grid-cols-3 gap-3">
-    <div><label class="lbl" for="fRoom">ห้อง</label><select id="fRoom" class="inp" onchange="renderMyBookings()"></select></div>
-    <div><label class="lbl" for="fDate">วันที่</label><input type="date" id="fDate" class="inp" onchange="renderMyBookings()"></div>
-    <div><label class="lbl" for="fName">ค้นหาชื่อผู้จอง</label><input type="text" id="fName" class="inp" placeholder="พิมพ์บางส่วนของชื่อ" oninput="renderMyBookings()"></div>
+    <div><label class="lbl" for="fRoom">ห้อง</label><select id="fRoom" class="inp" onchange="renderMyBookings(1)"></select></div>
+    <div><label class="lbl" for="fDate">วันที่</label><input type="date" id="fDate" class="inp" onchange="renderMyBookings(1)"></div>
+    <div><label class="lbl" for="fName">ค้นหาชื่อผู้จอง</label><input type="text" id="fName" class="inp" placeholder="พิมพ์บางส่วนของชื่อ" oninput="renderMyBookings(1)"></div>
   </div>
+  <div id="myChips" class="flex flex-wrap gap-2 mb-4"></div>
   <div id="myBookingsList" class="space-y-3"></div>
 </section>
 
@@ -375,7 +403,7 @@ tailwind.config = {
         <button type="submit" id="btnLogin" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
       </form>
       <div id="loginError" class="hidden mt-3 rounded-lg bg-clay-soft border border-clay/25 text-clay text-sm px-3 py-2 text-center">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
-      <p class="text-[11px] text-slate2/70 mt-4 text-center"</p>
+      <p class="text-[11px] text-slate2/70 mt-4 text-center">ค่าเริ่มต้น admin / benchama2 — เปลี่ยนได้ที่แท็บผู้ใช้งาน</p>
     </div>
   </div>
 </section>
@@ -410,12 +438,12 @@ tailwind.config = {
   <div id="atab-bookings" class="atab hidden">
     <div class="card p-4 mb-4 grid sm:grid-cols-3 gap-3">
       <div><label class="lbl" for="aStatus">สถานะ</label>
-        <select id="aStatus" class="inp" onchange="renderAdminBookings()">
+        <select id="aStatus" class="inp" onchange="renderAdminBookings(1)">
           <option value="">ทุกสถานะ</option><option value="pending">รอการอนุมัติ</option><option value="approved">อนุมัติแล้ว</option>
           <option value="rejected">ปฏิเสธ</option><option value="cancelled">ยกเลิก</option>
         </select></div>
-      <div><label class="lbl" for="aRoom">ห้อง</label><select id="aRoom" class="inp" onchange="renderAdminBookings()"></select></div>
-      <div><label class="lbl" for="aDate">วันที่</label><input type="date" id="aDate" class="inp" onchange="renderAdminBookings()"></div>
+      <div><label class="lbl" for="aRoom">ห้อง</label><select id="aRoom" class="inp" onchange="renderAdminBookings(1)"></select></div>
+      <div><label class="lbl" for="aDate">วันที่</label><input type="date" id="aDate" class="inp" onchange="renderAdminBookings(1)"></div>
     </div>
     <div id="adminBookingList" class="space-y-3"></div>
   </div>
@@ -663,6 +691,11 @@ const DEFAULT_ROOMS = [
 /* ── สถานะ ── */
 let records = [], rooms = [], allBookings = [], allUsers = [];
 let dataReady = false;
+let dataVersion = '';     // เลขรุ่นข้อมูลล่าสุดที่หน้านี้ถืออยู่
+let syncing = false;      // กันไม่ให้ซิงก์ซ้อนกัน
+
+const PAGE_SIZE = 50;     // จำนวนรายการต่อหนึ่งหน้า
+let pageMy = 1, pageAdmin = 1, myStatus = '';
 let viewMonth = new Date();
 let selectedDate = null, selectedRoom = null;
 let currentUser = null, adminTab = 'approvals';
@@ -718,10 +751,29 @@ const db = {
     if (!REMOTE) await this.persistLocal();
     refresh(); return { ok: true };
   },
-  async sync() {
-    if (!REMOTE) return;
-    try { records = await apiCall('list'); setConn(true); refresh(); }
-    catch (e) { setConn(false, e.message); }
+  /**
+   * ตรวจข้อมูลใหม่
+   * ปกติจะถามแค่เลขรุ่นซึ่งเบามาก ถ้าไม่เปลี่ยนก็ไม่โหลดอะไรเลย
+   * โหลดข้อมูลเต็มเฉพาะตอนที่มีคนบันทึกอะไรเข้ามาจริง
+   * force = true ใช้ตอนเปิดหน้าหรือกลับมาที่แท็บ
+   */
+  async sync(force) {
+    if (!REMOTE || syncing) return;
+    if (!force && document.hidden) return;   // แท็บถูกซ่อนอยู่ ไม่ต้องถาม
+
+    syncing = true;
+    try {
+      const v = await apiCall('version');
+      if (!force && v === dataVersion) { setConn(true); return; }
+      records = await apiCall('list');
+      dataVersion = v;
+      setConn(true);
+      refresh();
+    } catch (e) {
+      setConn(false, e.message);
+    } finally {
+      syncing = false;
+    }
   }
 };
 
@@ -785,7 +837,17 @@ async function init() {
   catch (e) { records = []; setConn(false, e.message); toast('เชื่อมต่อฐานข้อมูลกลางไม่ได้: ' + e.message, 'error'); }
   refresh();
   if (dataReady) await seedDefaults();
-  if (REMOTE) setInterval(() => db.sync(), POLL_SECONDS * 1000);
+
+  if (REMOTE) {
+    try { dataVersion = await apiCall('version'); } catch (e) {}
+    setInterval(() => db.sync(), POLL_SECONDS * 1000);
+
+    // กลับมาที่แท็บเมื่อไหร่ ให้ดึงข้อมูลล่าสุดทันที ไม่ต้องรอครบรอบ
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) db.sync(true);
+    });
+    window.addEventListener('focus', function () { db.sync(true); });
+  }
 }
 
 /* ══════════ ตัวช่วย ══════════ */
@@ -1240,7 +1302,8 @@ function roomLabel(b) {
 function bookingCard(b, actions) {
   const s = stat(b.status);
   const eq = equipmentText(b);
-  return `<div class="card p-5" style="border-left:4px solid ${s.bar}">
+  const isToday = b.date === dkey(new Date());
+  return `<div class="card card--hover p-5" style="border-left:4px solid ${s.bar}">
     <div class="flex flex-wrap items-start gap-3 mb-3">
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
@@ -1251,7 +1314,8 @@ function bookingCard(b, actions) {
       </div>
       <div class="ml-auto text-right">
         <div class="mono font-semibold text-sm">${esc(b.start_time)} – ${esc(b.end_time)}</div>
-        <div class="text-xs text-slate2">${thShort(b.date)}</div>
+        <div class="text-xs text-slate2 flex items-center gap-1.5 justify-end mt-0.5">
+          ${isToday ? '<span class="today-pill">วันนี้</span>' : ''}${thShort(b.date)}</div>
       </div>
     </div>
     <div class="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[13px] text-slate2 mb-3">
@@ -1265,25 +1329,77 @@ function bookingCard(b, actions) {
   </div>`;
 }
 
-function renderMyBookings() {
+/** แถบแบ่งหน้า คืนค่าว่างถ้ามีหน้าเดียว */
+function pagerHTML(total, page, fnName) {
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const from = (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, total);
+  if (pages <= 1) return '';
+
+  let opts = '';
+  for (let i = 1; i <= pages; i++) opts += `<option value="${i}" ${i === page ? 'selected' : ''}>หน้า ${i} / ${pages}</option>`;
+
+  return `<div class="pager">
+    <span class="pager__info">แสดง ${from}–${to} จาก ${total} รายการ</span>
+    <button class="pager__btn" ${page <= 1 ? 'disabled' : ''} onclick="${fnName}(${page - 1})" aria-label="หน้าก่อนหน้า">
+      <svg class="icon"><use href="#i-arrow-l"/></svg></button>
+    <select onchange="${fnName}(+this.value)" aria-label="เลือกหน้า">${opts}</select>
+    <button class="pager__btn" ${page >= pages ? 'disabled' : ''} onclick="${fnName}(${page + 1})" aria-label="หน้าถัดไป">
+      <svg class="icon"><use href="#i-arrow-r"/></svg></button>
+  </div>`;
+}
+
+/** ตัดรายการเฉพาะหน้าที่ต้องการ พร้อมกันหน้าเกินขอบ */
+function pageSlice(list, page) {
+  const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const p = Math.min(Math.max(1, page), pages);
+  return { p: p, items: list.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE) };
+}
+
+function renderMyBookings(page) {
   const room = document.getElementById('fRoom').value;
   const date = document.getElementById('fDate').value;
   const name = document.getElementById('fName').value.trim().toLowerCase();
   const box = document.getElementById('myBookingsList');
 
-  let list = allBookings.slice();
-  if (room) list = list.filter(b => b.room_name === room);
-  if (date) list = list.filter(b => b.date === date);
-  if (name) list = list.filter(b => (b.booker_name || '').toLowerCase().includes(name));
+  if (page) pageMy = page;
+
+  // กรองตามช่องค้นหาก่อน แล้วค่อยนับจำนวนแต่ละสถานะไว้ทำชิป
+  let base = allBookings.slice();
+  if (room) base = base.filter(b => b.room_name === room);
+  if (date) base = base.filter(b => b.date === date);
+  if (name) base = base.filter(b => (b.booker_name || '').toLowerCase().includes(name));
+
+  const counts = { '': base.length, pending: 0, approved: 0, cancelled: 0, rejected: 0 };
+  base.forEach(b => { counts[b.status] = (counts[b.status] || 0) + 1; });
+
+  document.getElementById('myChips').innerHTML =
+    [['', 'ทั้งหมด'], ['pending', 'รออนุมัติ'], ['approved', 'อนุมัติแล้ว'], ['cancelled', 'ยกเลิก'], ['rejected', 'ปฏิเสธ']]
+      .filter(([k]) => k === '' || counts[k] > 0)
+      .map(([k, label]) => `<button class="fchip ${myStatus === k ? 'on' : ''}" onclick="setMyStatus('${k}')">
+          ${label}<span class="fchip__n">${counts[k] || 0}</span></button>`).join('');
+
+  let list = myStatus ? base.filter(b => b.status === myStatus) : base;
   list.sort((a, b) => (b.date + b.start_time).localeCompare(a.date + a.start_time));
 
-  if (!list.length) { box.innerHTML = `<div class="card p-10 text-center text-slate2">ไม่พบรายการจองตามเงื่อนไขที่เลือก</div>`; return; }
+  if (!list.length) {
+    box.innerHTML = `<div class="card p-10 text-center text-slate2">ไม่พบรายการจองตามเงื่อนไขที่เลือก</div>`;
+    return;
+  }
 
-  box.innerHTML = list.map(b => bookingCard(b,
+  const { p, items } = pageSlice(list, pageMy);
+  pageMy = p;
+  const pager = pagerHTML(list.length, p, 'renderMyBookings');
+
+  box.innerHTML = pager + '<div class="space-y-3 list-in">' + items.map(b => bookingCard(b,
     (b.status === 'pending' ? `<button onclick="ownerEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>` : '') +
     (isLive(b) ? `<button onclick="ownerCancel('${b.booking_id}')" class="btn btn-danger btn-sm">ยกเลิกการจอง</button>` : '')
-  )).join('');
+  )).join('') + '</div>' + pager;
+
+  if (page) box.scrollIntoView({ behavior:'smooth', block:'start' });
 }
+
+function setMyStatus(k) { myStatus = k; renderMyBookings(1); }
 
 function cancelBooking(id) {
   confirmBox('ยกเลิกการจอง', 'ห้องจะกลับมาว่างให้คนอื่นจองได้ทันที', 'ยืนยันยกเลิก', async () => {
@@ -1483,7 +1599,8 @@ function reject(id) {
   document.body.appendChild(d);
 }
 
-function renderAdminBookings() {
+function renderAdminBookings(page) {
+  if (page) pageAdmin = page;
   const st = document.getElementById('aStatus').value;
   const rm = document.getElementById('aRoom').value;
   const dt = document.getElementById('aDate').value;
@@ -1497,12 +1614,18 @@ function renderAdminBookings() {
 
   if (!list.length) { box.innerHTML = `<div class="card p-10 text-center text-slate2">ไม่พบรายการจอง</div>`; return; }
 
-  box.innerHTML = list.map(b => bookingCard(b,
+  const { p, items } = pageSlice(list, pageAdmin);
+  pageAdmin = p;
+  const pager = pagerHTML(list.length, p, 'renderAdminBookings');
+
+  box.innerHTML = pager + '<div class="space-y-3 list-in">' + items.map(b => bookingCard(b,
     (b.status === 'pending' ? `<button onclick="approve('${b.booking_id}')" class="btn btn-mint btn-sm">อนุมัติ</button>` : '') +
     `<button onclick="openEdit('${b.booking_id}')" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-edit"/></svg>แก้ไข</button>` +
     (isLive(b) ? `<button onclick="cancelBooking('${b.booking_id}')" class="btn btn-ghost btn-sm">ยกเลิก</button>` : '') +
     `<button onclick="deleteBooking('${b.booking_id}')" class="btn btn-danger btn-sm"><svg class="icon"><use href="#i-trash"/></svg>ลบถาวร</button>`
-  )).join('');
+  )).join('') + '</div>' + pager;
+
+  if (page) box.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function deleteBooking(id) {

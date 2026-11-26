@@ -10,14 +10,14 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        navy:  { DEFAULT:'#0E2748', 700:'#16375F', 500:'#1B4FA0', 100:'#E7EDF6' },
-        royal: '#1B4FA0',
-        gold:  { DEFAULT:'#D69B22', soft:'#FBF1DC', deep:'#9A6C0B' },
-        paper: '#F2F5FA',
-        line:  '#DCE3ED',
-        mint:  { DEFAULT:'#0D7F66', soft:'#E1F2EE' },
-        clay:  { DEFAULT:'#B8402C', soft:'#FBE8E4' },
-        slate2:'#5B6B84'
+        navy:  { DEFAULT:'#0A1E3C', 900:'#061430', 700:'#143259', 500:'#1B56B0', 100:'#E4EBF6' },
+        royal: '#1B56B0',
+        gold:  { DEFAULT:'#E0A41C', soft:'#FCF2DA', deep:'#8E6205', dark:'#C08C10' },
+        paper: '#EFF3F9',
+        line:  '#D7E0EC',
+        mint:  { DEFAULT:'#0A7D60', soft:'#DDF2EC' },
+        clay:  { DEFAULT:'#C03A22', soft:'#FCE7E2' },
+        slate2:'#55657E'
       },
       fontFamily: {
         display: ['Bai Jamjuree','IBM Plex Sans Thai','sans-serif'],
@@ -37,7 +37,8 @@ tailwind.config = {
   .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
   .icon{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:-.14em;flex:0 0 auto}
 
-  .card{background:#fff;border:1px solid #DCE3ED;border-radius:14px}
+  .card{background:#fff;border:1px solid #D7E0EC;border-radius:16px;box-shadow:0 1px 2px rgba(10,30,60,.04),0 6px 18px rgba(10,30,60,.045)}
+  .card-flat{box-shadow:none}
   .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#9A6C0B}
 
   .inp{width:100%;border:1px solid #D5DDEA;border-radius:10px;padding:10px 12px;font-size:14.5px;background:#fff;color:#0E2748;transition:border-color .15s,box-shadow .15s;font-family:inherit}
@@ -48,10 +49,11 @@ tailwind.config = {
 
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;font-family:inherit;line-height:1.2}
   .btn:disabled{opacity:.55;cursor:default}
-  .btn-primary{background:#1B4FA0;color:#fff}
-  .btn-primary:hover:not(:disabled){background:#16407F}
-  .btn-gold{background:#D69B22;color:#0E2748}
-  .btn-gold:hover:not(:disabled){background:#C08A18}
+  .btn-primary{background:linear-gradient(180deg,#2461C2,#1B56B0);color:#fff;box-shadow:0 2px 8px rgba(27,86,176,.3)}
+  .btn-primary:hover:not(:disabled){background:linear-gradient(180deg,#1B56B0,#13438C);box-shadow:0 4px 14px rgba(27,86,176,.38)}
+  .btn-gold{background:linear-gradient(180deg,#EDB130,#E0A41C);color:#0A1E3C;box-shadow:0 2px 8px rgba(224,164,28,.32)}
+  .btn-gold:hover:not(:disabled){background:linear-gradient(180deg,#E0A41C,#C08C10);box-shadow:0 4px 14px rgba(224,164,28,.42)}
+  .btn-lg{padding:13px 26px;font-size:15px;border-radius:12px}
   .btn-ghost{background:#fff;border-color:#D5DDEA;color:#5B6B84}
   .btn-ghost:hover:not(:disabled){background:#F2F5FA;border-color:#B9C6D8}
   .btn-mint{background:#0D7F66;color:#fff}
@@ -64,27 +66,40 @@ tailwind.config = {
   .chip{display:inline-block;font-size:11.5px;color:#16375F;background:#E7EDF6;border-radius:6px;padding:2px 8px}
 
   /* ปฏิทิน */
-  .cal-day{position:relative;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-           border:1px solid #E4EAF3;border-radius:10px;background:#fff;color:#16375F;font-weight:500;transition:.15s;cursor:pointer;font-family:inherit}
-  .cal-day:hover:not(:disabled){border-color:#1B4FA0;background:#F6F9FE}
-  .cal-day[disabled]{background:#F4F6FA;color:#B4BFCF;border-color:#EDF0F5;cursor:default}
-  .cal-day .n{font-family:'IBM Plex Mono',monospace;font-size:15px}
-  .cal-day .mark{width:5px;height:5px;border-radius:50%;background:#D69B22}
-  .cal-day.today{border-color:#D69B22;box-shadow:inset 0 0 0 1px #D69B22}
-  .cal-day.sel{background:#0E2748;border-color:#0E2748;color:#fff}
-  .cal-day.sel .mark{background:#D69B22}
+  .cal-day{position:relative;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+           border:1px solid #E2E9F3;border-radius:9px;background:#fff;color:#143259;font-weight:500;cursor:pointer;font-family:inherit;
+           transition:background .13s,border-color .13s,transform .13s,box-shadow .13s}
+  .cal-day:hover:not(:disabled){border-color:#1B56B0;background:#F3F8FF;transform:translateY(-1px);box-shadow:0 3px 10px rgba(10,30,60,.09)}
+  .cal-day[disabled]{background:transparent;color:#BBC6D6;border-color:transparent;cursor:default}
+  .cal-day .n{font-family:'IBM Plex Mono',monospace;font-size:14.5px;line-height:1}
+  .cal-day .mark{width:5px;height:5px;border-radius:50%;background:#E0A41C}
+  .cal-day.today{border-color:#E0A41C;background:#FFFCF4;box-shadow:inset 0 0 0 1px #E0A41C}
+  .cal-day.sel{background:#0A1E3C;border-color:#0A1E3C;color:#fff;box-shadow:0 5px 16px rgba(10,30,60,.3)}
+  .cal-day.sel:hover{background:#143259;transform:translateY(-1px)}
+  .cal-day.sel .mark{background:#E0A41C}
+  @media (min-width:641px){ .cal-day{min-height:54px} .cal-day .n{font-size:15.5px} }
 
   /* แถบเวลาว่างของห้อง */
-  .tl{position:relative;height:7px;border-radius:99px;background:#E7ECF4;overflow:hidden}
-  .tl i{position:absolute;top:0;bottom:0;background:#16375F}
-  .tl i.pend{background:#D69B22}
-  .tl-ticks{display:flex;justify-content:space-between;font-size:10px;color:#98A6BC;margin-top:4px;font-family:'IBM Plex Mono',monospace}
+  .tl{position:relative;height:13px;border-radius:7px;overflow:hidden;
+      background:repeating-linear-gradient(90deg,#E8EEF7 0 1px,#F4F7FC 1px 11.1%)}
+  .tl i{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,#1B56B0,#143259);border-radius:3px;
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+  .tl i.pend{background:repeating-linear-gradient(45deg,#E0A41C 0 5px,#C08C10 5px 10px)}
+  .tl-ticks{display:flex;justify-content:space-between;font-size:10px;color:#8C9CB4;margin-top:4px;font-family:'IBM Plex Mono',monospace}
+  .tl-free{font-size:11.5px;color:#0A7D60;font-weight:600;display:flex;align-items:center;gap:5px}
+  .tl-free::before{content:'';width:6px;height:6px;border-radius:50%;background:#0A7D60}
 
-  .room{border:1px solid #DCE3ED;border-radius:14px;background:#fff;padding:18px;transition:.18s;text-align:left;width:100%;font-family:inherit;display:block}
+  .room{position:relative;border:1px solid #D7E0EC;border-radius:16px;background:#fff;padding:16px;text-align:left;width:100%;
+        font-family:inherit;display:block;overflow:hidden;box-shadow:0 1px 2px rgba(10,30,60,.05);
+        transition:border-color .18s,box-shadow .18s,transform .18s}
   .room.ok{cursor:pointer}
-  .room.ok:hover{border-color:#1B4FA0;box-shadow:0 6px 20px rgba(14,39,72,.09);transform:translateY(-2px)}
-  .room.no{opacity:.6}
-  .room.sel{border-color:#1B4FA0;box-shadow:0 0 0 3px rgba(27,79,160,.15)}
+  .room.ok::after{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;
+                  box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .18s}
+  .room.ok:hover{border-color:#1B56B0;box-shadow:0 14px 34px rgba(10,30,60,.14);transform:translateY(-3px)}
+  .room.ok:hover::after{box-shadow:inset 0 0 0 2px rgba(27,86,176,.4)}
+  .room.ok:hover .rphoto{transform:scale(1.04)}
+  .room.no{opacity:.55;filter:saturate(.5)}
+  .room .rphoto{transition:transform .35s ease}
 
   .tab{flex:1;min-width:130px;padding:10px 14px;border-radius:9px;font-size:13.5px;font-weight:600;border:0;cursor:pointer;transition:.15s;font-family:inherit;background:transparent;color:#5B6B84}
   .tab:hover{background:#EDF1F7}
@@ -144,7 +159,73 @@ tailwind.config = {
   .list-in{animation:fadein .22s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-  :focus-visible{outline:2px solid #1B4FA0;outline-offset:2px}
+
+  /* ══ แถบขั้นตอน ══ */
+  .steps{display:flex;align-items:stretch;background:#fff;border:1px solid #D7E0EC;border-radius:14px;
+         overflow:hidden;box-shadow:0 1px 2px rgba(10,30,60,.04),0 6px 18px rgba(10,30,60,.045)}
+  .step{flex:1;display:flex;align-items:center;gap:11px;padding:13px 16px;border:0;background:transparent;
+        font-family:inherit;text-align:left;cursor:default;position:relative;min-width:0;transition:background .15s}
+  .step+.step{border-left:1px solid #E6EDF6}
+  .step__n{width:28px;height:28px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+           font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+           background:#EDF2F9;color:#94A3B8;transition:.2s}
+  .step__t{font-size:13.5px;font-weight:600;color:#94A3B8;line-height:1.25;min-width:0}
+  .step__s{font-size:11px;color:#A8B4C6;line-height:1.3;margin-top:1px;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .step.done{cursor:pointer}
+  .step.done:hover{background:#F5F9FF}
+  .step.done .step__n{background:#DDF2EC;color:#0A7D60}
+  .step.done .step__t{color:#143259}
+  .step.done .step__s{color:#55657E}
+  .step.on{background:linear-gradient(180deg,#F7FAFF,#EEF4FD)}
+  .step.on::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:#E0A41C}
+  .step.on .step__n{background:#0A1E3C;color:#fff;box-shadow:0 2px 8px rgba(10,30,60,.3)}
+  .step.on .step__t{color:#0A1E3C}
+  .step.on .step__s{color:#55657E}
+  @media (max-width:640px){
+    .steps .step{padding:9px 10px;gap:7px}
+    .steps .step__n{width:24px;height:24px;font-size:11.5px}
+    .steps .step__t{font-size:11.5px}
+    .steps .step__s{display:none}
+  }
+
+  /* ══ แผงขั้นตอน ══ */
+  .panel{display:none;animation:panelin .26s cubic-bezier(.22,1,.36,1)}
+  .panel.on{display:block}
+  @keyframes panelin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ══ แถบสรุปตัวเลือกที่ค้างอยู่ ══ */
+  .recap{display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+         background:linear-gradient(180deg,#F7FAFF,#EFF5FD);border:1px solid #DBE6F4;
+         border-radius:12px;padding:10px 14px;font-size:13.5px}
+  .recap b{font-weight:600;color:#0A1E3C}
+  .recap .sep{width:4px;height:4px;border-radius:50%;background:#B6C4D8}
+  .recap:empty{display:none}
+  @media (max-width:640px){
+    .recap{gap:6px;padding:9px 11px;font-size:12.5px}
+    .recap .sep{display:none}
+  }
+
+  /* ══ การ์ดตัวเลขสถิติ ══ */
+  .stat{position:relative;overflow:hidden}
+  .stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#D7E0EC}
+  .stat--mint::before{background:#0A7D60}
+  .stat--gold::before{background:#E0A41C}
+  .stat--navy::before{background:#0A1E3C}
+  .stat__v{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:38px;line-height:1.05;letter-spacing:-.02em}
+
+  /* ══ ปุ่มช่วงเวลาสำเร็จรูป ══ */
+  .tslot{border:1px solid #D7E0EC;background:#fff;border-radius:10px;padding:9px 12px;
+         font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:#143259;
+         cursor:pointer;transition:.15s}
+  .tslot:hover{border-color:#1B56B0;background:#F3F8FF;color:#1B56B0}
+  .tslot.on{background:#0A1E3C;border-color:#0A1E3C;color:#fff}
+
+  /* ══ หัวเรื่องใหญ่ ══ */
+  .h-hero{font-size:clamp(26px,4vw,40px);line-height:1.12;letter-spacing:-.02em}
+  .accent{color:#E0A41C}
+
+  :focus-visible{outline:2px solid #1B56B0;outline-offset:2px}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#C8D3E2;border-radius:99px;border:3px solid #F2F5FA}
 
@@ -185,7 +266,7 @@ tailwind.config = {
 </defs></svg>
 
 <!-- ══════════ แถบบน ══════════ -->
-<header class="sticky top-0 z-50 no-print" style="background:linear-gradient(180deg,#0E2748,#14345F);border-bottom:3px solid #D69B22">
+<header class="sticky top-0 z-50 no-print" style="background:linear-gradient(165deg,#0A1E3C 0%,#143259 60%,#17396B 100%);border-bottom:3px solid #E0A41C;box-shadow:0 2px 16px rgba(10,30,60,.18)">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="flex items-center justify-between h-16 gap-3">
       <div class="flex items-center gap-3 min-w-0">
@@ -226,16 +307,34 @@ tailwind.config = {
 
 <!-- ══════════ หน้าจองห้อง ══════════ -->
 <section id="page-booking" class="page">
-  <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-5">
     <div>
-      <p class="eyebrow mb-1">ขั้นตอนการจอง</p>
-      <h1 class="font-display font-bold text-2xl sm:text-3xl leading-tight">เลือกวัน เลือกเวลา แล้วเลือกห้อง</h1>
-      <p class="text-slate2 text-sm mt-1">ระบบจะตรวจให้อัตโนมัติว่าห้องไหนว่างในช่วงเวลาที่ระบุ</p>
+      <p class="eyebrow mb-1.5">จองห้องประชุม</p>
+      <h1 class="font-display font-bold h-hero">เลือกวัน<span class="accent">·</span>เลือกห้อง<span class="accent">·</span>เสร็จ</h1>
+      <p class="text-slate2 text-sm mt-2">ระบบตรวจให้อัตโนมัติว่าห้องไหนว่างในช่วงเวลาที่ระบุ</p>
     </div>
     <div id="connBadge" class="text-xs font-medium text-slate2"></div>
   </div>
 
-  <div class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">
+  <!-- แถบขั้นตอน -->
+  <div class="steps mb-5" id="stepBar">
+    <button type="button" class="step on" id="stepTab1" onclick="gotoStep(1)">
+      <span class="step__n">1</span>
+      <span class="min-w-0"><span class="step__t block">วันและเวลา</span><span class="step__s block" id="stepSub1">ยังไม่ได้เลือก</span></span>
+    </button>
+    <button type="button" class="step" id="stepTab2" onclick="gotoStep(2)">
+      <span class="step__n">2</span>
+      <span class="min-w-0"><span class="step__t block">เลือกห้อง</span><span class="step__s block" id="stepSub2">รอเลือกวันและเวลา</span></span>
+    </button>
+    <button type="button" class="step" id="stepTab3" onclick="gotoStep(3)">
+      <span class="step__n">3</span>
+      <span class="min-w-0"><span class="step__t block">กรอกข้อมูล</span><span class="step__s block" id="stepSub3">รอเลือกห้อง</span></span>
+    </button>
+  </div>
+
+  <!-- ═══ ขั้นที่ 1 ═══ -->
+  <div class="panel on" id="panel1">
+  <div class="grid lg:grid-cols-[minmax(0,1fr)_330px] gap-5 items-start">
 
     <!-- ปฏิทิน -->
     <div class="card p-5">
@@ -263,13 +362,17 @@ tailwind.config = {
         <div><label class="lbl" for="startTime">เวลาเริ่มต้น</label><input type="time" id="startTime" class="inp mono" onchange="onTimeChange()"></div>
         <div><label class="lbl" for="endTime">เวลาสิ้นสุด</label><input type="time" id="endTime" class="inp mono" onchange="onTimeChange()"></div>
       </div>
-      <div class="mt-3 flex flex-wrap gap-1.5">
-        <button class="btn btn-ghost btn-sm" onclick="quickTime('08:30','10:00')">08:30–10:00</button>
-        <button class="btn btn-ghost btn-sm" onclick="quickTime('10:00','12:00')">10:00–12:00</button>
-        <button class="btn btn-ghost btn-sm" onclick="quickTime('13:00','15:00')">13:00–15:00</button>
-        <button class="btn btn-ghost btn-sm" onclick="quickTime('15:00','16:30')">15:00–16:30</button>
+      <p class="lbl mt-4 mb-2">ช่วงเวลาที่ใช้บ่อย</p>
+      <div class="grid grid-cols-2 gap-2" id="quickSlots">
+        <button type="button" class="tslot" data-s="08:30" data-e="10:00" onclick="quickTime('08:30','10:00')">08:30–10:00</button>
+        <button type="button" class="tslot" data-s="10:00" data-e="12:00" onclick="quickTime('10:00','12:00')">10:00–12:00</button>
+        <button type="button" class="tslot" data-s="13:00" data-e="15:00" onclick="quickTime('13:00','15:00')">13:00–15:00</button>
+        <button type="button" class="tslot" data-s="15:00" data-e="16:30" onclick="quickTime('15:00','16:30')">15:00–16:30</button>
+        <button type="button" class="tslot col-span-2" data-s="08:00" data-e="16:30" onclick="quickTime('08:00','16:30')">ทั้งวัน 08:00–16:30</button>
       </div>
       <div id="selSummary" class="mt-4 pt-4 border-t border-line text-sm text-slate2">ยังไม่ได้เลือกวันที่</div>
+      <button type="button" id="toStep2" class="btn btn-primary btn-lg w-full mt-4" disabled onclick="gotoStep(2)">
+        ดูห้องที่ว่าง<svg class="icon"><use href="#i-arrow-r"/></svg></button>
     </div>
   </div>
 
@@ -278,22 +381,25 @@ tailwind.config = {
     <h2 class="font-display font-semibold text-lg mb-4">ตารางการใช้ห้องวันที่เลือก</h2>
     <div id="dayScheduleList" class="space-y-2"></div>
   </div>
+  </div><!-- /panel1 -->
 
-  <!-- ห้องประชุม -->
-  <div id="roomSection" class="mt-7 hidden">
+  <!-- ═══ ขั้นที่ 2 ═══ -->
+  <div class="panel" id="panel2">
+    <div id="recap2" class="recap mb-4"></div>
     <div class="flex items-end justify-between gap-3 mb-4">
-      <div>
-        <p class="eyebrow mb-1">ขั้นตอนที่ 3</p>
-        <h2 class="font-display font-bold text-xl">เลือกห้องประชุม</h2>
-      </div>
+      <h2 class="font-display font-bold text-xl">เลือกห้องประชุม</h2>
       <span id="roomAvailCount" class="text-sm text-slate2"></span>
     </div>
-    <div id="roomList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <div id="roomSection">
+      <div id="roomList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+    <button type="button" class="btn btn-ghost mt-5" onclick="gotoStep(1)">
+      <svg class="icon"><use href="#i-arrow-l"/></svg>กลับไปแก้วันและเวลา</button>
   </div>
 
-  <!-- ฟอร์มจอง -->
-  <div id="bookingForm" class="card p-5 sm:p-6 mt-7 hidden">
-    <p class="eyebrow mb-1">ขั้นตอนสุดท้าย</p>
+  <!-- ═══ ขั้นที่ 3 ═══ -->
+  <div class="panel" id="panel3">
+  <div id="bookingForm" class="card p-5 sm:p-6">
     <h2 class="font-display font-bold text-xl mb-5">กรอกข้อมูลการจอง</h2>
 
     <div class="rounded-xl bg-navy-100 border border-line p-4 mb-6 grid sm:grid-cols-2 gap-y-2 gap-x-6 text-sm">
@@ -356,10 +462,12 @@ tailwind.config = {
 
       <div class="flex flex-col sm:flex-row gap-3 mt-6 pt-5 border-t border-line">
         <button type="submit" id="btnSubmit" class="btn btn-primary flex-1"><svg class="icon"><use href="#i-check"/></svg>ยืนยันการจอง</button>
-        <button type="button" onclick="closeBookingForm()" class="btn btn-ghost flex-1">ยกเลิก</button>
+        <button type="button" onclick="gotoStep(2)" class="btn btn-ghost flex-1">
+          <svg class="icon"><use href="#i-arrow-l"/></svg>เปลี่ยนห้อง</button>
       </div>
     </form>
   </div>
+  </div><!-- /panel3 -->
 </section>
 
 <!-- ══════════ รายการจอง ══════════ -->
@@ -380,9 +488,9 @@ tailwind.config = {
   <p class="eyebrow mb-1">ภาพรวมการใช้งาน</p>
   <h1 class="font-display font-bold text-2xl sm:text-3xl mb-5">สถิติการใช้ห้องประชุม</h1>
   <div class="grid sm:grid-cols-3 gap-4 mb-5">
-    <div class="card p-5"><p class="text-xs text-slate2 font-medium">การจองทั้งหมด</p><p id="stTotal" class="font-display font-bold text-4xl mt-1">0</p></div>
-    <div class="card p-5 border-l-4 border-l-mint"><p class="text-xs text-slate2 font-medium">อนุมัติแล้ว</p><p id="stApproved" class="font-display font-bold text-4xl mt-1 text-mint">0</p></div>
-    <div class="card p-5 border-l-4 border-l-gold"><p class="text-xs text-slate2 font-medium">รอการอนุมัติ</p><p id="stPending" class="font-display font-bold text-4xl mt-1 text-gold-deep">0</p></div>
+    <div class="card stat stat--navy p-5 pl-6"><p class="text-xs text-slate2 font-medium">การจองทั้งหมด</p><p id="stTotal" class="stat__v mt-1">0</p></div>
+    <div class="card stat stat--mint p-5 pl-6"><p class="text-xs text-slate2 font-medium">อนุมัติแล้ว</p><p id="stApproved" class="stat__v mt-1 text-mint">0</p></div>
+    <div class="card stat stat--gold p-5 pl-6"><p class="text-xs text-slate2 font-medium">รอการอนุมัติ</p><p id="stPending" class="stat__v mt-1 text-gold-deep">0</p></div>
   </div>
   <div class="grid md:grid-cols-2 gap-5">
     <div class="card p-5"><h2 class="font-display font-semibold text-lg mb-4">ห้องที่ถูกใช้มากที่สุด</h2><div id="rankRooms"></div></div>
@@ -403,7 +511,7 @@ tailwind.config = {
         <button type="submit" id="btnLogin" class="btn btn-primary w-full">เข้าสู่ระบบ</button>
       </form>
       <div id="loginError" class="hidden mt-3 rounded-lg bg-clay-soft border border-clay/25 text-clay text-sm px-3 py-2 text-center">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
-      <p class="text-[11px] text-slate2/70 mt-4 text-center"</p>
+      
     </div>
   </div>
 </section>
@@ -486,9 +594,9 @@ tailwind.config = {
     </div>
 
     <div class="grid sm:grid-cols-3 gap-4 mb-5">
-      <div class="card p-5"><p class="text-xs text-slate2 font-medium">การจองทั้งหมด</p><p id="rTotal" class="font-display font-bold text-3xl mt-1">0</p></div>
-      <div class="card p-5"><p class="text-xs text-slate2 font-medium">รอการอนุมัติ</p><p id="rPending" class="font-display font-bold text-3xl mt-1 text-gold-deep">0</p></div>
-      <div class="card p-5"><p class="text-xs text-slate2 font-medium">อนุมัติแล้ว</p><p id="rApproved" class="font-display font-bold text-3xl mt-1 text-mint">0</p></div>
+      <div class="card stat stat--navy p-5 pl-6"><p class="text-xs text-slate2 font-medium">การจองทั้งหมด</p><p id="rTotal" class="stat__v mt-1">0</p></div>
+      <div class="card stat stat--gold p-5 pl-6"><p class="text-xs text-slate2 font-medium">รอการอนุมัติ</p><p id="rPending" class="stat__v mt-1 text-gold-deep">0</p></div>
+      <div class="card stat stat--mint p-5 pl-6"><p class="text-xs text-slate2 font-medium">อนุมัติแล้ว</p><p id="rApproved" class="stat__v mt-1 text-mint">0</p></div>
     </div>
     <div class="card p-5 mb-5"><h2 class="font-display font-semibold text-lg mb-4">สัดส่วนการใช้แต่ละห้อง</h2><div id="roomChart"></div></div>
     <div class="card p-5">
@@ -697,6 +805,7 @@ let versionMode = true;   // เซิร์ฟเวอร์รองรับ
 
 const PAGE_SIZE = 50;     // จำนวนรายการต่อหนึ่งหน้า
 let pageMy = 1, pageAdmin = 1, myStatus = '';
+let bookStep = 1;         // ขั้นตอนการจองที่กำลังแสดง
 let viewMonth = new Date();
 let selectedDate = null, selectedRoom = null;
 let currentUser = null, adminTab = 'approvals';
@@ -1010,6 +1119,7 @@ function showPage(p) {
       if (b) b.classList.toggle('on', k === p);
     });
   });
+  if (p === 'booking') updateSteps();
   if (p === 'myBookings') { fillRoomSelect('fRoom'); renderMyBookings(); }
   if (p === 'statistics') renderStats();
   if (p === 'admin') { fillRoomSelect('aRoom'); fillRoomSelect('rRoom'); showAdminTab(adminTab); }
@@ -1056,7 +1166,12 @@ function renderCalendar() {
     btn.disabled = past;
     btn.innerHTML = `<span class="n">${d}</span>` + (count ? `<span class="mark"></span>` : `<span style="height:5px"></span>`);
     btn.setAttribute('aria-label', thDate(key) + (count ? ` มีการจอง ${count} รายการ` : ' ยังไม่มีการจอง'));
-    if (!past) btn.onclick = () => { selectedDate = key; renderCalendar(); onTimeChange(); };
+    if (!past) btn.onclick = () => {
+      selectedDate = key;
+      selectedRoom = null;        // เปลี่ยนวันแล้ว ห้องที่เคยเลือกไว้ใช้ไม่ได้
+      renderCalendar();
+      onTimeChange();
+    };
     cal.appendChild(btn);
   }
   renderDaySchedule();
@@ -1095,14 +1210,82 @@ function quickTime(a, b) {
   onTimeChange();
 }
 
+/** วันและเวลาครบและสมเหตุสมผลแล้วหรือยัง */
+function step1Ready() {
+  const st = document.getElementById('startTime').value, en = document.getElementById('endTime').value;
+  return !!(selectedDate && st && en && st < en);
+}
+
 function onTimeChange() {
   renderDaySchedule();
   const st = document.getElementById('startTime').value, en = document.getElementById('endTime').value;
-  const sec = document.getElementById('roomSection');
-  if (!selectedDate || !st || !en) { sec.classList.add('hidden'); return; }
-  if (st >= en) { sec.classList.add('hidden'); toast('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น', 'error'); return; }
-  sec.classList.remove('hidden');
-  renderRooms();
+
+  // ไฮไลต์ปุ่มช่วงเวลาสำเร็จรูปที่ตรงกับค่าปัจจุบัน
+  document.querySelectorAll('#quickSlots .tslot').forEach(b =>
+    b.classList.toggle('on', b.dataset.s === st && b.dataset.e === en));
+
+  if (st && en && st >= en) toast('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น', 'error');
+
+  document.getElementById('toStep2').disabled = !step1Ready();
+  if (step1Ready()) renderRooms();
+  updateSteps();
+}
+
+/** ย้ายไปขั้นที่กำหนด โดยไม่ให้ข้ามขั้นที่ยังไม่พร้อม */
+function gotoStep(n) {
+  if (n >= 2 && !step1Ready()) {
+    toast('เลือกวันที่และช่วงเวลาให้ครบก่อน', 'error');
+    n = 1;
+  }
+  if (n === 3 && !selectedRoom) {
+    toast('เลือกห้องประชุมก่อน', 'error');
+    n = 2;
+  }
+  bookStep = n;
+
+  [1, 2, 3].forEach(i =>
+    document.getElementById('panel' + i).classList.toggle('on', i === n));
+
+  if (n === 2) renderRooms();
+  updateSteps();
+
+  // เลื่อนให้เห็นแถบขั้นตอนพอดี เผื่อความสูงแถบบนที่ยึดติดอยู่ ซึ่งสูงไม่เท่ากันบนมือถือ
+  const bar = document.getElementById('stepBar');
+  const head = document.querySelector('header');
+  if (bar) {
+    const pad = (head ? head.getBoundingClientRect().height : 64) + 14;
+    window.scrollTo({ top: Math.max(0, bar.offsetTop - pad), behavior: 'smooth' });
+  }
+}
+
+/** อัปเดตแถบขั้นตอนและแถบสรุป ให้ตรงกับสิ่งที่เลือกไว้ */
+function updateSteps() {
+  const st = document.getElementById('startTime').value, en = document.getElementById('endTime').value;
+  const ready = step1Ready();
+
+  const subs = [
+    ready ? thShort(selectedDate) + '  ' + st + '–' + en
+          : (selectedDate ? thShort(selectedDate) + ' · ยังไม่ได้ใส่เวลา' : 'ยังไม่ได้เลือก'),
+    selectedRoom ? selectedRoom.name : (ready ? 'พร้อมเลือกห้องแล้ว' : 'รอเลือกวันและเวลา'),
+    selectedRoom ? 'พร้อมกรอกข้อมูล' : 'รอเลือกห้อง'
+  ];
+  const done = [ready, !!selectedRoom, false];
+
+  [1, 2, 3].forEach(i => {
+    const tab = document.getElementById('stepTab' + i);
+    document.getElementById('stepSub' + i).textContent = subs[i - 1];
+    tab.classList.toggle('on', bookStep === i);
+    tab.classList.toggle('done', bookStep !== i && done[i - 1]);
+  });
+
+  // แถบสรุปบนขั้นที่ 2 ให้เห็นว่ากำลังหาห้องของวันไหน เวลาใด
+  const r2 = document.getElementById('recap2');
+  if (r2) r2.innerHTML = ready
+    ? `<svg class="icon text-royal"><use href="#i-cal"/></svg><b>${esc(thDate(selectedDate))}</b>
+       <span class="sep"></span><svg class="icon text-royal"><use href="#i-clock"/></svg>
+       <b class="mono">${esc(st)} – ${esc(en)}</b>
+       <button type="button" class="btn btn-ghost btn-sm ml-auto" onclick="gotoStep(1)">แก้ไข</button>`
+    : '';
 }
 
 function isFree(roomName, date, st, en, ignoreId) {
@@ -1118,7 +1301,21 @@ function timelineHTML(roomName) {
     if (e <= s) return '';
     return `<i class="${b.status === 'pending' ? 'pend' : ''}" style="left:${(s-DAY_START)/span*100}%;width:${(e-s)/span*100}%"></i>`;
   }).join('');
-  return `<div class="tl">${bars}</div><div class="tl-ticks"><span>07</span><span>10</span><span>13</span><span>16</span><span>19</span></div>`;
+  const label = items.length
+    ? `<span class="text-[11.5px] text-slate2">มี ${items.length} คิวในวันนี้</span>`
+    : `<span class="tl-free">ว่างทั้งวัน</span>`;
+  return `<div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-semibold text-slate2 tracking-wide">ตารางวันที่เลือก</span>${label}
+          </div>
+          <div class="tl">${bars}</div>
+          <div class="tl-ticks"><span>07</span><span>10</span><span>13</span><span>16</span><span>19</span></div>`;
+}
+
+/** คิวที่ทับกับช่วงเวลาที่ผู้ใช้เลือก ใช้บอกเหตุผลว่าทำไมห้องนี้จองไม่ได้ */
+function clashOf(roomName, date, st, en) {
+  return allBookings.filter(b => b.room_name === roomName && b.date === date && isLive(b) &&
+                                 !(en <= b.start_time || st >= b.end_time))
+                    .sort((a, b) => a.start_time.localeCompare(b.start_time));
 }
 
 function renderRooms() {
@@ -1145,6 +1342,7 @@ function renderRooms() {
         <span class="pill ${ok ? 'bg-mint-soft text-mint' : 'bg-clay-soft text-clay'}">${ok ? 'ว่าง' : 'ไม่ว่าง'}</span>
       </div>
       <p class="text-[13px] text-slate2 mb-3">จุได้ ${r.capacity} คน${r.location ? ' · ' + esc(r.location) : ''}</p>
+      ${ok ? '' : clashNote(r.name, st, en)}
       ${timelineHTML(r.name)}
       <div class="flex flex-wrap gap-1.5 mt-3">${eq}${more}</div>
       <div class="flex items-center gap-2.5 mt-3 pt-3 border-t border-line">
@@ -1155,6 +1353,17 @@ function renderRooms() {
   }).join('');
 
   document.getElementById('roomAvailCount').textContent = `ว่าง ${free} จาก ${open.length} ห้อง`;
+}
+
+/** กล่องบอกว่าห้องนี้ติดคิวอะไรอยู่ */
+function clashNote(roomName, st, en) {
+  const c = clashOf(roomName, selectedDate, st, en);
+  if (!c.length) return '';
+  const first = c[0];
+  return `<div class="rounded-lg bg-clay-soft border border-clay/20 px-3 py-2 mb-3 text-[12px] text-clay leading-snug">
+    ติด <b class="mono">${esc(first.start_time)}–${esc(first.end_time)}</b> ${esc(first.purpose)}
+    ${c.length > 1 ? ` และอีก ${c.length - 1} รายการ` : ''}
+  </div>`;
 }
 
 function pickRoom(roomId) {
@@ -1178,8 +1387,7 @@ function pickRoom(roomId) {
   mic.max = micMax; mic.value = 0;
   document.getElementById('micHint').textContent = 'ห้องนี้มีไมค์สูงสุด ' + micMax + ' ตัว';
 
-  document.getElementById('bookingForm').classList.remove('hidden');
-  document.getElementById('bookingForm').scrollIntoView({ behavior:'smooth', block:'start' });
+  gotoStep(3);
 }
 
 function toggleArrange(prefix) {
@@ -1188,12 +1396,12 @@ function toggleArrange(prefix) {
 }
 
 function closeBookingForm() {
-  document.getElementById('bookingForm').classList.add('hidden');
   document.getElementById('formBooking').reset();
   document.getElementById('arrangeBox').classList.add('hidden');
   document.getElementById('layoutPreview').classList.add('hidden');
   layoutImageData = null;
   selectedRoom = null;
+  gotoStep(1);
 }
 
 /* ══════════ รูปผังห้อง ══════════ */
